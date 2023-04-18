@@ -1,62 +1,38 @@
 import { User } from "../models/user.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-export const getAllUsers = async (req, res) => {
-  const users = await User.find({});
+export const getAllUsers = async (req, res) => {};
 
-  const keyword = req.query.keyword;
-  console.log(keyword);
-
-  res.status(201).json({
-    success: true,
-    users,
-  });
-};
-
-export const createNewUser = async (req, res) => {
+export const register = async (req, res) => {
   const { name, email, password } = req.body;
+  let user = await User.findOne({ email });
 
-  await User.create({
-    name,
-    email,
-    password,
-  });
+  if (user) {
+    return res.status(404).json({
+      success: false,
+      message: "User already Exist",
+    });
+  }
 
-  res.status(201).json({
-    success: true,
-    message: "Registered successfully",
-  });
+  const hashedPasssword = await bcrypt.hash(password, 10);
+
+  user = await User.create({ name, email, password: hashedPasssword });
+
+  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
+  res
+    .status(201)
+    .cookie("token", token, {
+      httpOnly: true,
+      maxAge: 15 * 20 * 1000,
+    })
+    .json({
+      success: true,
+      message: "User REgisteration Successful",
+    });
 };
 
-export const getUserById= async(req,res)=>{
+export const login = async (req, res) => {};
 
-  const id = req.params.id;
-  const user = await User.findById(id);
-
-  res.json({
-    success:true,
-    user
-  })
-}
-
-export const updateUser=async(req,res)=>{
-  const id=req.params.id;
-  const user=await User.findById(id);
-  console.log(user);
-  res.json({
-    success:true,
-    message:"user Updated",
-  })
-}
-
-export const deleteUser = async (req, res) => {
-  const id = req.params.id;
-  const user = await User.findById(id);
-  console.log(user);
-
-  res.json({
-    success: true,
-    message: "user deleted",
-  });
-};
-
-
+export const getUserById = async (req, res) => {};
