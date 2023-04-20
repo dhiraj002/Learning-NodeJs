@@ -1,11 +1,21 @@
-import express from "express";
+import express, { Router } from "express";
 import { isAuthenticated } from "../utils/auth.js";
-import { addNewTask, getMyTask } from "../controllers/task.js";
+import {
+  addNewTask,
+  deleteTask,
+  getMyTask,
+  updateTask,
+} from "../controllers/task.js";
 
 const router = express.Router();
 
 router.post("/new", isAuthenticated, addNewTask);
 
-router.get("/mytask", isAuthenticated, getMyTask)
+router.get("/mytask", isAuthenticated, getMyTask);
+
+router
+  .route("/:id")
+  .put(isAuthenticated, updateTask)
+  .delete(isAuthenticated, deleteTask);
 
 export default router;
