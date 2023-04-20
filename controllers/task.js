@@ -26,7 +26,7 @@ export const getMyTask = async (req, res) => {
   });
 };
 
-export const updateTask = async (req, res) => {
+export const updateTask = async (req, res,next) => {
   const { id } = req.params;
   // console.log(id);
 
@@ -34,10 +34,7 @@ export const updateTask = async (req, res) => {
   // console.log(tasks);
 
   if (!task)
-    return res.status(404).json({
-      success: false,
-      message: "Invalid Task id",
-    });
+    return next(new Error("invalid id"));
 
   task.isCompleted = !task.isCompleted;
   await task.save();
@@ -48,17 +45,14 @@ export const updateTask = async (req, res) => {
   });
 };
 
-export const deleteTask = async (req, res) => {
+export const deleteTask = async (req, res,next) => {
   const { id } = req.params;
-  console.log(id);
+  // console.log(id);
   const task = await Task.findById(id);
-  console.log(task);
+  // console.log(task);
 
   if (!task)
-    return res.status(404).json({
-      success: false,
-      message: "Invalid Task id",
-    });
+    return next(new Error("invalid id"));
 
   await task.deleteOne();
 

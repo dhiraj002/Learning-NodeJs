@@ -1,5 +1,5 @@
-import express, { Router } from "express";
-import { isAuthenticated } from "../utils/auth.js";
+import express from "express";
+import { isAuthenticated } from "../middlewares/auth.js";
 import {
   addNewTask,
   deleteTask,
